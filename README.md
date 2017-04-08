@@ -22,3 +22,11 @@ pip install -r requirements.txt
 python -m studentit.roster.cli [command] [arguments]
 ```
 
+## Tests
+From inside the main repository directory run the following commands. This will only work on Linux.
+
+```
+export PYTHONPATH=`pwd`
+py.test --cov=studentit tests
+```
+
