@@ -1,2 +1,2 @@
-from .file_loader import FileLoader
+from .xlsx_loader import XlsxLoader
 

@@ -11,4 +11,3 @@ class Roster(object):
 
     def add_shift(self, shift):
         self.shifts.append(shift)
-

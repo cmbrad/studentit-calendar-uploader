@@ -10,4 +10,3 @@ class Intern(object):
 
     def __repr__(self):
         return '{!s}({!r})'.format(self.__class__, self.__dict__)
-

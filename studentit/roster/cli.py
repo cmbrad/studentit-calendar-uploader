@@ -2,22 +2,30 @@ import logging
 
 import click
 
-from .loader import FileLoader
+from .loader import XlsxLoader
+from ..config import Config
 
 
 @click.group()
-def cli():
-    pass
+@click.pass_context
+def cli(ctx):
+    configure_logging()
+    ctx.obj['LOGGER'] = logging.getLogger('studentit.roster.cli')
 
 
 @cli.command(name='upload', help='Uploads a roster from the given source to the given target')
-@click.option('--filename', '-f', required=True)
-def upload(filename):
-    file_loader = FileLoader()
-    roster = file_loader.load(filename)
+@click.option('--roster-filename', '-r', required=True)
+@click.option('--config-filename', '-c', required=True)
+@click.pass_obj
+def upload(obj, roster_filename, config_filename):
+    obj['LOGGER'].info('Starting with roster {} and config {}'.format(roster_filename, config_filename))
+
+    config = Config().from_file(config_filename)
+    roster = XlsxLoader(config['xlsx_loader']).load(roster_filename)
 
     print(roster)
-    print(file_loader)
+
+    obj['LOGGER'].info('Upload complete')
 
 
 @cli.command(name='validate', help='Checks if a given roster file is a valid file format')
@@ -26,6 +34,24 @@ def validate(filename):
     pass
 
 
-if __name__ == '__main__':
-    cli()
+def configure_logging():
+    # create logger
+    logger = logging.getLogger('studentit')
+    logger.setLevel(logging.DEBUG)
 
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+
+    # add ch to logger
+    logger.addHandler(ch)
+
+
+if __name__ == '__main__':
+    cli(obj={})

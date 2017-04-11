@@ -27,6 +27,5 @@ From inside the main repository directory run the following commands. This will 
 
 ```
 export PYTHONPATH=`pwd`
-py.test --cov=studentit tests
+py.test --cov=studentit --flake8 tests
 ```
-

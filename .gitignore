@@ -5,3 +5,5 @@ config
 .cache
 .coverage
 *.swp
+rosters
+config.json
