@@ -8,5 +8,4 @@ class GcalUploader(RosterUploader):
         self.calendars = calendars
 
     def _upload_shift(self, shift):
-        self.logger.debug('Uploading shift {}'.format(shift))
-
+        raise NotImplementedError

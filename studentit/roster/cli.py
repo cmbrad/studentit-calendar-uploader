@@ -3,6 +3,7 @@ import logging
 import click
 
 from .loader import XlsxLoader
+from .uploader import GcalUploader
 from ..config import Config
 
 
@@ -21,11 +22,14 @@ def upload(obj, roster_filename, config_filename):
     obj['LOGGER'].info('Starting with roster {} and config {}'.format(roster_filename, config_filename))
 
     config = Config().from_file(config_filename)
-    roster = XlsxLoader(config['xlsx_loader']).load(roster_filename)
 
-    print(roster)
+    loader = XlsxLoader(config['xlsx_loader'])
+    uploader = GcalUploader(config['gcal_uploader'])
 
-    obj['LOGGER'].info('Upload complete')
+    roster = loader.load(roster_filename)
+    uploader.upload(roster)
+
+    obj['LOGGER'].info('Complete')
 
 
 @cli.command(name='validate', help='Checks if a given roster file is a valid file format')

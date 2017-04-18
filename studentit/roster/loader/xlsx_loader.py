@@ -5,13 +5,10 @@ from pathlib import Path
 
 import dateutil.parser
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter, coordinate_from_string, column_index_from_string
 
 from ..roster import Roster
 from .roster_loader import RosterLoader
-
-
-# Colour index of a blank cell in the worksheet
-BLANK_COLOUR = '00000000'
 
 
 class XlsxLoader(RosterLoader):
@@ -25,21 +22,38 @@ class XlsxLoader(RosterLoader):
         if not Path(path).is_file():
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
 
-        sheet = self._sheet(path)
-        start_date, end_date = self._date_range(sheet)
+        ws = self._sheet(path)
+        start_date, end_date = self._date_range(ws)
         roster = Roster(start_date=start_date, end_date=end_date)
 
-        print(sheet['C2'].fill.start_color.index)
-        print(sheet['C3'].fill.start_color.index)
-        print(sheet['C4'].fill.start_color.index)
-        print(sheet['C5'].fill.start_color.index)
-        print(sheet['C6'].fill.start_color.index)
-        print(sheet['C7'].fill.start_color.index)
-        print(sheet['C8'].fill.start_color.index)
-        print(sheet['F7'].fill.start_color.index)
-        print(sheet['F10'].fill.start_color.index)
+        people = self._people(ws)
+
+        people_col_num, people_start_row = self._split_coords(self.config['people_start_cell'])
+        for i in range(0, len(people)):
+            people_col = get_column_letter(people_col_num)
+            name = ws['{}{}'.format(people_col, people_start_row)].value
+
+            self.logger.debug('Parsing shifts for {}'.format(name))
+            
+            for people_row in range(people_start_row + 1, 10):
+                cell = ws['{}{}'.format(people_col, people_row)]
+                print(cell.value, cell.fill.start_color.index)
+            people_col_num += 1
 
         return roster
+
+    def _split_coords(self, cell_ref):
+        col, row = coordinate_from_string(self.config['people_start_cell'])
+        return column_index_from_string(col), row
+
+    def _people(self, ws):
+        people = []
+        for row in ws.iter_rows('C6:ZZ6'):
+            for cell in row:
+                if cell.value is None:
+                    break
+                people.append(cell.value)
+        return people
 
     def _sheet(self, path):
         self.logger.debug('Loading workbook')
