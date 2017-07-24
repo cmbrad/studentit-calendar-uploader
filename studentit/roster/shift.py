@@ -2,8 +2,8 @@ import logging
 
 
 class Shift(object):
-    def __init__(self, intern, location, start_time, end_time):
-        self.intern = intern
+    def __init__(self, name, location, start_time, end_time):
+        self.name = name
         self.location = location
         self.start_time = start_time
         self.end_time = end_time
