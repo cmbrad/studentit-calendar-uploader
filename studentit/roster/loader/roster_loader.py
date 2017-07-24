@@ -10,4 +10,3 @@ class RosterLoader(object):
 
     def load(self, path):
         raise NotImplementedError
-

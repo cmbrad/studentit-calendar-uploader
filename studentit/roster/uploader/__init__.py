@@ -1,2 +1,1 @@
-from .gcal_uploader import GcalUploader
-
+from .gcal_uploader import GcalUploader  # noqa

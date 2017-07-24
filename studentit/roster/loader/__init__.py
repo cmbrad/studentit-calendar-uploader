@@ -1,2 +1,1 @@
-from .xlsx_loader import XlsxLoader
-
+from .xlsx_loader import XlsxLoader  # noqa

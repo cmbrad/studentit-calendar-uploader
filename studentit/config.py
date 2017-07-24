@@ -12,7 +12,7 @@ class Config(object):
         with open(filename, 'r') as f:
             self._data = json.load(f)
 
-        return self 
+        return self
 
     def __getitem__(self, key):
         return self._data[key]

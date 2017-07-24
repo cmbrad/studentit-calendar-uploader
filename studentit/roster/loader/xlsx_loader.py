@@ -34,7 +34,7 @@ class XlsxLoader(RosterLoader):
             name = ws['{}{}'.format(people_col, people_start_row)].value
 
             self.logger.debug('Parsing shifts for {}'.format(name))
-            
+
             for people_row in range(people_start_row + 1, 10):
                 cell = ws['{}{}'.format(people_col, people_row)]
                 print(cell.value, cell.fill.start_color.index)
@@ -72,7 +72,8 @@ class XlsxLoader(RosterLoader):
         date_cell_text = sheet[date_cell_ref].value
 
         if date_cell_text is None:
-            raise Exception('No text in date cell ({}). Check if cell reference is correct in the config file.'.format(date_cell_ref))
+            raise Exception('No text in date cell ({}). Check if cell reference is correct in the config file.'.format(
+                date_cell_ref))
 
         matches = re.findall(cell_format, date_cell_text)
         if len(matches) != 1:

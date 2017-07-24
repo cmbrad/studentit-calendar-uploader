@@ -14,4 +14,3 @@ class RosterUploader(object):
 
     def _upload_shift(self, shift):
         raise NotImplementedError
-
