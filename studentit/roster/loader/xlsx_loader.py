@@ -24,6 +24,8 @@ class ShiftCollector(object):
     def add_partial(self, colour, cell_row, text):
         location = self._library_colour_index.get(colour)
         start_time, end_time = self._cell_time_index.get(cell_row)
+        if text is not None:
+            start_time, end_time = self._parse_modifier(start_time, end_time, text)
 
         if location is None:
             raise Exception('Unknown colour location')
@@ -32,6 +34,27 @@ class ShiftCollector(object):
             self.shifts.append(Shift(name=self.name, location=location, start_time=start_time, end_time=end_time))
 
         self.shifts[-1].end_time = end_time
+
+    def _parse_modifier(self, start_time, end_time, modifier):
+        modifier = self._clean_modifier(modifier)
+        start_time_match = re.search(r'(start|from) (?P<start_time>.*)', modifier)
+        if start_time_match:
+            new_time = parser.parse(start_time_match.groups('start_time')[1])
+            start_time = start_time.replace(hour=new_time.hour, minute=new_time.minute)
+
+        end_time_match = re.search(r'(until|finish) (?P<end_time>.*)', modifier)
+        if end_time_match:
+            new_time = parser.parse(end_time_match.groups('end_time')[1])
+            end_time = end_time.replace(hour=new_time.hour, minute=new_time.minute)
+
+        return start_time, end_time
+
+    def _clean_modifier(self, modifier):
+        # Sometimes the roster uses periods to separate minutes
+        # and hours instead of colons. We cannot parse that
+        modifier = modifier.replace('.', ':')
+
+        return modifier
 
 
 class XlsxLoader(RosterLoader):
