@@ -132,14 +132,15 @@ class XlsxLoader(RosterLoader):
                 if cell.value is None:
                     continue
 
-                print(cell.value)
                 if '-' not in cell.value:
                     try:
-                        cur_date = parser.parse(cell.value)
+                        date_text = self._clean_date_value(cell.value)
+                        cur_date = parser.parse(date_text)
                     except ValueError:
-                        self.logger.warning(f'Could not parse potential date cell {cell.value}')
+                        self.logger.warning(f'Could not parse potential date cell {date_text}')
                 else:
-                    start_time, end_time = cell.value.split(' - ', 2)
+                    time_text = cell.value
+                    start_time, end_time = time_text.split(' - ', 2)
 
                     start_time =  parser.parse(start_time)
                     end_time = parser.parse(end_time)
@@ -150,6 +151,16 @@ class XlsxLoader(RosterLoader):
                     index[cell.row] = start_time, end_time
 
         return index
+
+    def _clean_date_value(self, value):
+        # Fix common misspellings for Tuesday which we cannot parse
+        value = value.replace('Tues', 'Tue')
+
+        # Fix common misspellings for Thursday which we cannot parse
+        value = value.replace('Thurs', 'Thu')
+        value = value.replace('Thur', 'Thu')
+
+        return value
 
     def _sheet(self, path):
         self.logger.debug('Loading workbook')
