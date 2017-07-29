@@ -8,14 +8,15 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter, coordinate_from_string, column_index_from_string
 from dateutil import parser
 
+from studentit.roster.employee import Employee
 from studentit.roster.shift import Shift
 from ..roster import Roster
 from .roster_loader import RosterLoader
 
 
 class ShiftCollector(object):
-    def __init__(self, name, library_colour_index, cell_time_index):
-        self.name = name
+    def __init__(self, employee_name, library_colour_index, cell_time_index):
+        self.employee_name = employee_name
         self._library_colour_index = library_colour_index
         self._cell_time_index = cell_time_index
 
@@ -31,7 +32,7 @@ class ShiftCollector(object):
             raise Exception('Unknown colour location')
 
         if len(self.shifts) == 0 or self.shifts[-1].location != location:
-            self.shifts.append(Shift(name=self.name, location=location, start_time=start_time, end_time=end_time))
+            self.shifts.append(Shift(employee=Employee(self.employee_name), location=location, start_time=start_time, end_time=end_time))
 
         self.shifts[-1].end_time = end_time
 
